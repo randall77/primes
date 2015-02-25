@@ -82,7 +82,7 @@ func init() {
 // A chunk is the range of values that are sieved for primes all at
 // once.  A chunk occupies chunk/30 bytes.  We want this size to fit
 // in cache because we access it in a strided fashion.
-const chunk = 30 * (1 << 16) // 64KB of data
+const chunk = 30 * (1 << 15) // 32KB of data
 
 // A chunk with all bits set
 var one [chunk / 30]byte
@@ -124,12 +124,15 @@ func (set *Set) computeMore() {
 				i += (start - i + p - 1) / p * p
 			}
 
-			for _, info := range iterInfo[i%30][s] {
-				// start at i+j*p, stride 30p
-				for b := (i + int(info.j)*p) / 30; b < len(sieve); b += p {
-					sieve[b] &= info.mask
-				}
+			row := &iterInfo[i%30][s]
+			var indexes [8]int
+			var masks [8]byte
+			for k := 0; k < 8; k++ {
+				indexes[k] = (i + int(row[k].j)*p) / 30
+				masks[k] = row[k].mask
 			}
+
+			inner(sieve, &indexes, masks, p)
 		}
 	}
 }
