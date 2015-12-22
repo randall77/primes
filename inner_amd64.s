@@ -14,7 +14,7 @@ TEXT ·inner(SB), 4, $0-48
 	MOVQ	48(CX), R13
 	MOVQ	56(CX), DI
 
-	MOVW	a+32(FP), R11	// 8 byte masks
+	MOVW	a+32(FP), R11	// 8 byte masks (loaded 2 at a time)
 	MOVW	a+34(FP), BX
 	MOVW	a+36(FP), CX
 	MOVW	a+38(FP), DX
@@ -72,5 +72,3 @@ tail:
 	ANDB	DL, (BP)(R13*1)
 exit:
 	RET
-
-loop2:	

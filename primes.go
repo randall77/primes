@@ -100,11 +100,11 @@ func (set *Set) computeMore() {
 	set.sieve = append(set.sieve, one[:]...)
 
 	if start == 0 {
-		// for bootstrapping, initialize first byte.  1 is not prime, the rest are.
+		// For bootstrapping, initialize first byte.  1 is not prime, the rest are.
 		set.sieve[0] = 0xfe
 	}
 
-	// iterate over primes we know so far, mark their multiples in the new chunk as not prime.
+	// Iterate over primes we know so far, mark their multiples in the new chunk as not prime.
 	sieve := set.sieve
 	for base, mask := range sieve {
 		for s := slot(0); mask != 0; s++ {
@@ -114,14 +114,17 @@ func (set *Set) computeMore() {
 			}
 			mask >>= 1
 
+			// The next prime to sieve with.
 			p := base*30 + int(slot2int[s])
+
+			// Mark all multiples of p, starting at p*p, as composite.
 			i := p * p
 			if i >= end {
 				return
 			}
 			if i < start {
 				// set i to the first multiple of p which is >= start
-				i += (start - i + p - 1) / p * p
+				i = (start + p - 1) / p * p
 			}
 
 			row := &iterInfo[i%30][s]
